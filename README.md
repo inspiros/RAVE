@@ -52,8 +52,6 @@ First, run [``scalable_train.py``](scalable_train.py) to train a baseline _singl
 python train.py --eval --source_path [dataset_path] --lod 0 --voxel_size 0.001 --appearance_dim 0 --ratio 1 -m [baseline_output_path]
 ```
 
-Example commands can be found in [``commands.txt``](commands.txt).
-
 ### Step 2: Train progressive model
 
 <p align="center">
@@ -66,8 +64,6 @@ obtained from [step 1](#step-1-train-baseline-model):
 ```cmd
 python scalable_train.py --eval --source_path [dataset_path] --pretrained_path [baseline_output_path] --lod 0 --voxel_size 0.001 --appearance_dim 0 --ratio 1 -m [multilevel_output_path] --G 5 --num_levels 8 --min 50000 --max 0.85 --compress --quantize --lambda_l1 0
 ```
-
-Example commands can be found in [``commands.txt``](commands.txt).
 
 ### Step 3: Interpolate
 
@@ -82,7 +78,9 @@ Finally, run [``scalable_interp.py``](scalable_interp.py) to obtain the continuo
 python scalable_interp.py --eval --source_path [dataset_path] --pretrained_path [multilevel_output_path] --lod 0 --voxel_size 0.001 --appearance_dim 0 --ratio 1 -m [interpolated_model_path] --G 5 --num_levels 8 --num_test_levels 50 --min 50000 --max 0.85 --compress --quantize --lambda_l1 0
 ```
 
-Example commands can be found in [``interp_commands.txt``](interp_commands.txt).
+> [!NOTE]
+> All the commands to reproduce experiments in the paper can be found in
+> [``commands.txt``](commands.txt) and [``interp_commands.txt``](interp_commands.txt).
 
 ## Contact
 
