@@ -51,7 +51,8 @@ Prepare the datasets according to the instructions of
     <img src="resources/single_rate.png" height="240">
 </p>
 
-First, run [``scalable_train.py``](scalable_train.py) to train a baseline _single-rate_ Scaffold-GS model:
+First, run [``scalable_train.py``](scalable_train.py) to train a baseline _single-rate_ Scaffold-GS model.
+This step is optional if you already have the pre-trained models.
 
 ```cmd
 python train.py --eval --source_path [dataset_path] --lod 0 --voxel_size 0.001 --appearance_dim 0 --ratio 1 -m [baseline_output_path]
@@ -63,21 +64,24 @@ python train.py --eval --source_path [dataset_path] --lod 0 --voxel_size 0.001 -
     <img src="resources/progressive.png" height="240">
 </p>
 
-Next, run [``scalable_train.py``](scalable_train.py) to train a multilevel (a.k.a. _progressive_) model starting from the weights
-obtained from [step 1](#step-1-train-baseline-model):
+Next, run [``scalable_train.py``](scalable_train.py) to train a scalable (a.k.a. _progressive_) model starting from the weights
+obtained in [step 1](#step-1-train-baseline-model).
+We adopt the procedure and hyperparameters in [GoDE](https://arxiv.org/abs/2501.13558),
+which entails 30000 iterations of fine-tuning.
 
 ```cmd
 python scalable_train.py --eval --source_path [dataset_path] --pretrained_path [baseline_output_path] --lod 0 --voxel_size 0.001 --appearance_dim 0 --ratio 1 -m [multilevel_output_path] --G 5 --num_levels 8 --min 50000 --max 0.85 --compress --quantize --lambda_l1 0
 ```
 
-### Step 3: Interpolate
+### Step 3: Interpolate from progressive anchors
 
 <p align="center">
-    <img src="resources/continuous.png" height="240">
+    <img src="resources/continuous_with_anchors.png" height="240">
 </p>
 
-Finally, run [``scalable_interp.py``](scalable_interp.py) to obtain the continuous model using the output of
+Finally, run [``scalable_interp.py``](scalable_interp.py) to obtain the continuous model by interpolating between the output anchors of
 [step 2](#step-2-train-progressive-model).
+This step is the main contribution of this work.
 
 ```cmd
 python scalable_interp.py --eval --source_path [dataset_path] --pretrained_path [multilevel_output_path] --lod 0 --voxel_size 0.001 --appearance_dim 0 --ratio 1 -m [interpolated_model_path] --G 5 --num_levels 8 --num_test_levels 50 --min 50000 --max 0.85 --compress --quantize --lambda_l1 0
@@ -86,6 +90,9 @@ python scalable_interp.py --eval --source_path [dataset_path] --pretrained_path 
 > [!NOTE]
 > All the commands to reproduce experiments in the paper can be found in
 > [``commands.txt``](commands.txt) and [``interp_commands.txt``](interp_commands.txt).
+> 
+> The script in [step 3](#step-3-interpolate-from-progressive-anchors) might seem to be slow but most of the
+> execution time is dedicated to evaluation, which should be disabled if unnecessary.
 
 ## Contact
 
