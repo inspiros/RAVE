@@ -1,12 +1,42 @@
-RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting
+RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting [![arXiv](https://img.shields.io/badge/arXiv-2512.07052-b31b1b.svg?style=flat)](https://www.arxiv.org/abs/2512.07052)
 ------
+[Hoang-Nhat Tran](https://github.com/inspiros),
+[Francesco Di Sario](https://scholar.google.com/citations?user=wjOMl_8AAAAJ),
+[Gabriele Spadaro](https://scholar.google.com/citations?user=9uugWy0AAAAJ),
+[Giuseppe Valenzise](https://scholar.google.com/citations?user=7ftDv4gAAAAJ),
+[Enzo Tartaglione](https://enzotarta.github.io/)
+
+## Overview
 
 <p align="center">
     <img src="resources/pipeline.png" height="300">
 </p>
 
-This repo contains the code of the paper
+This repo contains the official implementation of the paper
 [**RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting**](https://www.arxiv.org/abs/2512.07052).
+
+## Installation
+
+### Dependencies
+
+First clone this repo:
+
+```
+git clone https://github.com/inspiros/rave.git
+cd rave
+```
+
+Then, unzip ``submodules/submodules.tar.gz`` and install the two required submodules using the
+following command:
+
+```cmd
+pip install [path_to_submodule]
+```
+
+### Data
+
+Prepare the datasets according to the instructions of
+[Scaffold-GS](https://github.com/city-super/Scaffold-GS) repository.
 
 ## Usage
 
@@ -54,6 +84,11 @@ python scalable_interp.py --eval --source_path [dataset_path] --pretrained_path 
 
 Example commands can be found in [``interp_commands.txt``](interp_commands.txt).
 
+## Contact
+
+- Hoang-Nhat Tran: hoang-nhat.tran@unicaen.fr
+- Francesco Di Sario: francesco.disario@edu.unito.it
+
 ## Citation
 
 Feel free to use the code, and please cite our paper https://www.arxiv.org/abs/2512.07052:
@@ -72,4 +107,4 @@ Feel free to use the code, and please cite our paper https://www.arxiv.org/abs/2
 
 ## License
 
-MIT licensed. See [LICENSE.txt](LICENSE.txt).
+Please follow the license of [3D-GS](https://github.com/graphdeco-inria/gaussian-splatting/blob/main/LICENSE.md).
