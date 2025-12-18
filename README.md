@@ -1,8 +1,8 @@
 RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting [![arXiv](https://img.shields.io/badge/arXiv-2512.07052-b31b1b.svg?style=flat)](https://www.arxiv.org/abs/2512.07052)
 ------
 [Hoang-Nhat Tran](https://github.com/inspiros),
-[Francesco Di Sario](https://scholar.google.com/citations?user=wjOMl_8AAAAJ),
-[Gabriele Spadaro](https://scholar.google.com/citations?user=9uugWy0AAAAJ),
+[Francesco Di Sario](https://eidos.di.unito.it/author/francesco-di-sario/),
+[Gabriele Spadaro](https://eidos.di.unito.it/author/gabriele-spadaro/),
 [Giuseppe Valenzise](https://scholar.google.com/citations?user=7ftDv4gAAAAJ),
 [Enzo Tartaglione](https://enzotarta.github.io/)
 
@@ -87,19 +87,30 @@ python scalable_interp.py --eval --source_path [dataset_path] --pretrained_path 
 - Hoang-Nhat Tran: hoang-nhat.tran@unicaen.fr
 - Francesco Di Sario: francesco.disario@edu.unito.it
 
-## Citation
+## Citation and Acknowledgements
 
-Feel free to use the code, and please cite our paper https://www.arxiv.org/abs/2512.07052:
+Feel free to use the code, and please cite [our paper](https://www.arxiv.org/abs/2512.07052):
 
 ```bibtex
 @misc{tran2025rave,
-    title={RAVE: Rate-Adaptive Visual Encoding for 3D Gaussian Splatting}, 
-    author={Hoang-Nhat Tran and Francesco Di Sario and Gabriele Spadaro and Giuseppe Valenzise and Enzo Tartaglione},
-    year={2025},
-    eprint={2512.07052},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV},
-    url={https://arxiv.org/abs/2512.07052}, 
+  title         = {RAVE: Rate-Adaptive Visual Encoding for 3D Gaussian Splatting}, 
+  author        = {Hoang-Nhat Tran and Francesco Di Sario and Gabriele Spadaro and Giuseppe Valenzise and Enzo Tartaglione},
+  year          = {2025},
+  eprint        = {2512.07052},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2512.07052}, 
+}
+```
+
+This work is built upon [GoDE](https://arxiv.org/abs/2501.13558) - a scalable 3DGS compression technique, please cite:
+
+```bibtex
+@article{di2025gode,
+  title   = {Gode: Gaussians on demand for progressive level of detail and scalable compression},
+  author  = {Di Sario, Francesco and Renzulli, Riccardo and Grangetto, Marco and Sugimoto, Akihiro and Tartaglione, Enzo},
+  journal = {arXiv preprint arXiv:2501.13558},
+  year    = {2025}
 }
 ```
 
