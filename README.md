@@ -22,8 +22,8 @@ This repo contains the official implementation of the paper
 First clone this repo:
 
 ```
-git clone https://github.com/inspiros/rave.git
-cd rave
+git clone https://github.com/inspiros/RAVE.git
+cd RAVE
 ```
 
 Then, unzip ``submodules/submodules.tar.gz`` and install the two required submodules using the
