@@ -1,10 +1,11 @@
 RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting [![arXiv](https://img.shields.io/badge/arXiv-2512.07052-b31b1b.svg?style=flat)](https://www.arxiv.org/abs/2512.07052)
 ------
-[Hoang-Nhat Tran](https://github.com/inspiros),
-[Francesco Di Sario](https://eidos.di.unito.it/author/francesco-di-sario/),
+[Hoang-Nhat Tran](https://github.com/inspiros)\*,
+[Francesco Di Sario](https://eidos.di.unito.it/author/francesco-di-sario/)\*,
 [Gabriele Spadaro](https://eidos.di.unito.it/author/gabriele-spadaro/),
 [Giuseppe Valenzise](https://scholar.google.com/citations?user=7ftDv4gAAAAJ),
-[Enzo Tartaglione](https://enzotarta.github.io/)
+[Enzo Tartaglione](https://enzotarta.github.io/)\
+<sub>\*: Equal contribution</sub>
 
 ## Overview
 
@@ -13,7 +14,8 @@ RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting [![arXiv](https://
 </p>
 
 This repo contains the official implementation of the paper
-[**RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting**](https://www.arxiv.org/abs/2512.07052).
+[**RAVE: Rate-Adaptive Visual Encoding for 3d Gaussian Splatting**](https://www.arxiv.org/abs/2512.07052),
+featuring the first continuous-rate Gaussian splats compression technique.
 
 ## Installation
 
@@ -33,10 +35,13 @@ following command:
 pip install [path_to_submodule]
 ```
 
+All other dependencies are inherited from the [Scaffold-GS](https://github.com/city-super/Scaffold-GS) repository.
+We do not provide a SIBR viewer, but you can try your luck with existing ones.
+
 ### Data
 
 Prepare the datasets according to the instructions of
-[Scaffold-GS](https://github.com/city-super/Scaffold-GS) repository.
+[Scaffold-GS](https://github.com/city-super/Scaffold-GS).
 
 ## Usage
 
