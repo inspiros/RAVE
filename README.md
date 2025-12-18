@@ -10,9 +10,13 @@ This repo contains the code of the paper
 
 ## Usage
 
-### Step 1: Train baseline model
+### Step 1: Train baseline single-rate model
 
-Run [``scalable_train.py``](scalable_train.py) to train the baseline Scaffold-GS model:
+<p align="center">
+    <img src="resources/single_rate.png" height="240">
+</p>
+
+First, run [``scalable_train.py``](scalable_train.py) to train a baseline _single-rate_ Scaffold-GS model:
 
 ```cmd
 python train.py --eval --source_path [dataset_path] --lod 0 --voxel_size 0.001 --appearance_dim 0 --ratio 1 -m [baseline_output_path]
@@ -22,7 +26,11 @@ Example commands can be found in [``commands.txt``](commands.txt).
 
 ### Step 2: Train progressive model
 
-Run [``scalable_train.py``](scalable_train.py) to train a multilevel _(progressive)_ model starting from the weights
+<p align="center">
+    <img src="resources/progressive.png" height="240">
+</p>
+
+Next, run [``scalable_train.py``](scalable_train.py) to train a multilevel (a.k.a. _progressive_) model starting from the weights
 obtained from [step 1](#step-1-train-baseline-model):
 
 ```cmd
@@ -33,7 +41,11 @@ Example commands can be found in [``commands.txt``](commands.txt).
 
 ### Step 3: Interpolate
 
-Run [``scalable_interp.py``](scalable_interp.py) to obtain the continuous model using the output of
+<p align="center">
+    <img src="resources/continuous.png" height="240">
+</p>
+
+Finally, run [``scalable_interp.py``](scalable_interp.py) to obtain the continuous model using the output of
 [step 2](#step-2-train-progressive-model).
 
 ```cmd
