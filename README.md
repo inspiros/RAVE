@@ -1,4 +1,4 @@
-RAVE: Rate-Adaptive Visual Encoding for 3D Gaussian Splatting [![arXiv](https://img.shields.io/badge/arXiv-2512.07052-b31b1b.svg?style=flat)](https://www.arxiv.org/abs/2512.07052)
+<img src="resources/favicon.svg" height=36> RAVE: Rate-Adaptive Visual Encoding for 3D Gaussian Splatting [![arXiv](https://img.shields.io/badge/arXiv-2512.07052-b31b1b.svg?style=flat)](https://www.arxiv.org/abs/2512.07052)
 ------
 [Hoang-Nhat Tran](https://github.com/inspiros)\*,
 [Francesco Di Sario](https://eidos.di.unito.it/author/francesco-di-sario/)\*,
