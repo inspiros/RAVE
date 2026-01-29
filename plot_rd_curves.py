@@ -4,12 +4,32 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
-font_path = 'D:\\data\\fonts\\lm\\fonts\\opentype\\public\\lm\\lmroman12-regular.otf'  # Your font path goes here
-font_manager.fontManager.addfont(font_path)
-prop = font_manager.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.sans-serif'] = prop.get_name()
-plt.rcParams['font.size'] = 16
+
+# font_path = 'D:\\data\\fonts\\lm\\fonts\\opentype\\public\\lm\\lmroman12-regular.otf'
+font_path = 'D:\\data\\fonts\\newcm\\NewCM10-Regular.otff'
+if os.path.exists(font_path):
+    font_manager.fontManager.addfont(font_path)
+    prop = font_manager.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.sans-serif'] = prop.get_name()
+else:
+    plt.rcParams['font.family'] = 'Times New Roman'
+    plt.rcParams['font.serif'] = 'Times'
+
+# plt.rcParams['axes.titlesize'] = 18
+# plt.rcParams['axes.labelsize'] = 24
+# plt.rcParams['xtick.labelsize'] = 18
+# plt.rcParams['ytick.labelsize'] = 18
+# plt.rcParams['legend.fontsize'] = 20
+# plt.rcParams['figure.titlesize'] = 32
+# plt.rcParams['font.size'] = 20
+plt.rcParams['axes.titlesize'] = 18
+plt.rcParams['axes.labelsize'] = 20
+plt.rcParams['xtick.labelsize'] = 16
+plt.rcParams['ytick.labelsize'] = 16
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['figure.titlesize'] = 28
+plt.rcParams['font.size'] = 18
 
 # plt.style.use('ggplot')
 
@@ -61,11 +81,11 @@ for method in METHODS_ARGS.keys():
     if method.startswith('multilevel_interp'):
         m_args.update(marker='none', linestyle='-', linewidth=3)
     else:
-        m_args.update(markersize=6, linestyle='--', linewidth=1, alpha=0.75)
+        m_args.update(markersize=10, linestyle='--', linewidth=1, alpha=0.75)
         if method == 'pcgs':
             m_args.update(linestyle='-')
         if method == 'hac++':
-            m_args.update(markersize=12)
+            m_args.update(markersize=m_args['markersize'] * 2)
 
 
 def parse_args():
@@ -75,17 +95,20 @@ def parse_args():
     parser.add_argument('--models', type=str, nargs='+', default='multilevel_interp')
     parser.add_argument('--other_models', type=str, nargs='+', default=None)
     parser.add_argument('--datasets', type=str, nargs='+', default=['mipnerf360', 'tandt', 'db'])
-    parser.add_argument('--distortion', type=str, choices=['psnr', 'ssim', 'lpips'], default='psnr')
+    parser.add_argument('--distortion', type=str, choices=['psnr', 'ssim', 'lpips', 'fps'], default='psnr')
+    parser.add_argument('--size', type=str, choices=['size', 'fps'], default='size')
     parser.add_argument('--include_baseline', action='store_true')
     parser.add_argument('--export_legend', action='store_true')
+    parser.add_argument('--show_legend', action='store_true')
     args = parser.parse_args()
     # TODO: remove
     import platform
     if platform.system() == 'Windows':
         # args.other_models = ['pcgs', 'cat3dgs', 'contextgs', 'hac++', 'hac', 'rdo', 'elmgs', 'compgs', 'sog',
         #                      'reduced_3dgs', 'compact3dgs', 'trimmingthefat', 'lightgaussian'][::-1]
-        args.other_models = ['pcgs', 'hac++', 'hac', 'rdo', 'compgs',
-                             'reduced_3dgs', 'lightgaussian'][::-1]
+        # args.other_models = ['pcgs', 'hac++', 'hac', 'rdo', 'compgs',
+        #                      'reduced_3dgs', 'lightgaussian'][::-1]
+        args.other_models = ['hac', 'rdo', 'reduced_3dgs', 'lightgaussian'][::-1]
     return args
 
 
@@ -129,7 +152,16 @@ def main():
         'psnr': 0,
         'ssim': 1,
         'lpips': 2,
+        'fps': 4,
     }[args.distortion]
+    size_ind = {
+        'size': -1,
+        'fps': -3,
+    }[args.size]
+    other_size_ind = {
+        'size': 3,
+        'fps': 5,
+    }[args.size]
 
     datasets = to_list(args.datasets, sorted(os.listdir(args.output_path)))
     args.models = to_list(args.models)
@@ -162,7 +194,7 @@ def main():
 
         # plot
         for config in res.keys():
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(7, 5))
 
             for other_model in args.other_models:
                 other_model_path = os.path.join(args.other_models_path, dataset, other_model + '.csv')
@@ -170,14 +202,14 @@ def main():
                 if other_result.ndim == 1:
                     other_result = other_result[np.newaxis, :]
                 distortion = other_result[:, distortion_ind]
-                size = other_result[:, 3]
+                size = other_result[:, other_size_ind]
                 extra_args = METHODS_ARGS[other_model]
                 ax.plot(size, distortion, label=METHODS_NAMES.get(other_model, other_model), **extra_args)
 
             for model, result in res[config].items():
                 distortion = result[:, distortion_ind]
-                size = result[:, -1]
-                if model in ['multilevel', 'non_hierarchical']:
+                size = result[:, size_ind]
+                if args.size == 'size' and model in ['multilevel', 'non_hierarchical']:
                     size += 0.031561851501464844  # checkpoints size
 
                 extra_args = {}
@@ -188,26 +220,35 @@ def main():
                 ax.plot(size, distortion, label=METHODS_NAMES.get(model, model), **extra_args)
                 # if model == 'multilevel_interp':  # plot anchors (hard-coded)
                 #     ax.plot(size[::7], distortion[::7], color='r',
-                #             marker=get_anchor(), markersize=12, linestyle='none')
-            ax.set_xlabel('Size (MB)$\\downarrow$')
+                #             marker=get_anchor(), markersize=15, linestyle='none')
+            ax.set_xlabel({
+                'size': 'Size [MB]$\\downarrow$',
+                'fps': 'FPS$\\uparrow$',
+            }[args.size])
             ax.set_ylabel({
-                'psnr': 'PSNR$\\uparrow$',
+                'psnr': 'PSNR [dB]$\\uparrow$',
                 'ssim': 'SSIM$\\uparrow$',
                 'lpips': 'LPIPS$\\downarrow$',
+                'fps': 'FPS$\\uparrow$',
             }[args.distortion])
-            ax.grid(True)
-            # ax.legend(loc='best')
+            ax.grid(True, which='both', linestyle='-', alpha=0.4)
+
+            fig.tight_layout()
+            if args.show_legend:
+                ax.legend(loc='best')
             if args.export_legend:
-                leg = ax.legend(ncol=2)
+                leg = ax.legend(ncol=5)
                 while len(ax.artists):
                     ax.artists[0].remove()
                 while len(ax.lines):
                     ax.lines[0].remove()
                 export_legend(leg, os.path.join(args.output_path, 'legend.svg'))
-            fig.tight_layout()
-            fig.savefig(os.path.join(args.output_path, f'{dataset}_{args.distortion}.svg'), transparent=True)
+            fig.savefig(os.path.join(args.output_path, f'{dataset}_{args.distortion}_{args.size}.svg'),
+                        bbox_inches='tight', transparent=True, pad_inches=0.1)
             print(f'saved figure for {dataset}')
             plt.show()
+            if args.export_legend:
+                exit()
 
 
 if __name__ == '__main__':

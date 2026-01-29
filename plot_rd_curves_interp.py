@@ -4,17 +4,28 @@ import os
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import font_manager
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from svgpath2mpl import parse_path
 
-from matplotlib import font_manager
-font_path = 'D:\\data\\fonts\\lm\\fonts\\opentype\\public\\lm\\lmroman12-regular.otf'  # Your font path goes here
-font_manager.fontManager.addfont(font_path)
-prop = font_manager.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.sans-serif'] = prop.get_name()
-plt.rcParams['font.size'] = 16
+# font_path = 'D:\\data\\fonts\\lm\\fonts\\opentype\\public\\lm\\lmroman12-regular.otf'
+font_path = 'D:\\data\\fonts\\newcm\\NewCM10-Regular.otf'
+if os.path.exists(font_path):
+    font_manager.fontManager.addfont(font_path)
+    prop = font_manager.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.sans-serif'] = prop.get_name()
+else:
+    plt.rcParams['font.family'] = 'Times New Roman'
+    plt.rcParams['font.serif'] = 'Times'
 
+plt.rcParams['axes.titlesize'] = 18
+plt.rcParams['axes.labelsize'] = 20
+plt.rcParams['xtick.labelsize'] = 16
+plt.rcParams['ytick.labelsize'] = 16
+plt.rcParams['legend.fontsize'] = 18
+plt.rcParams['figure.titlesize'] = 28
+plt.rcParams['font.size'] = 18
 
 # plt.style.use('ggplot')
 
@@ -55,7 +66,7 @@ def export_legend(legend, path, expand=None):
 ZOOM_COLOR = 'lightcoral'
 # ZOOM_COLOR = 'gray'
 METHODS_NAMES = {
-    'multilevel_interp': 'Local Ranking (Ours)',
+    'multilevel_interp': 'Feature Gradient (Ours)',
     'multilevel_interp_random': 'Random Selection',
     'multilevel_interp_opacity': 'Opacity Ranking',
     'multilevel_interp_scaling': 'Scale Ranking$\\nearrow$',
@@ -63,7 +74,7 @@ METHODS_NAMES = {
     'multilevel_interp_geometry': 'Geometry Gradient Ranking',
     'multilevel_interp_xyz': 'Location Gradient Ranking',
     'multilevel_interp_global': 'Global Ranking',
-    '50levels': 'GoDe + Multiple Anchors',
+    '50levels': 'Multiple Anchors',
     'continuous': 'GoDe w/o Iterative Masking + Continuous Training',
 }
 METHODS_ARGS = {
@@ -96,13 +107,16 @@ def parse_args():
     parser.add_argument('--output_path', type=str, default='output')
     parser.add_argument('--other_models_path', type=str, default=None)
     parser.add_argument('--models', type=str, nargs='+', default=[
-        'multilevel_interp_random', 'multilevel_interp_opacity', 'multilevel_interp_scaling',
+        'multilevel_interp_random', 'multilevel_interp_opacity',
+        'multilevel_interp_scaling', 'multilevel_interp_scaling2',
         'multilevel_interp'])
     parser.add_argument('--other_models', type=str, nargs='+', default=None)
     parser.add_argument('--datasets', type=str, nargs='+', default=['mipnerf360'])
     parser.add_argument('--distortion', type=str, choices=['psnr', 'ssim', 'lpips', 'fps'], default='psnr')
+    parser.add_argument('--size', type=str, choices=['size', 'fps'], default='size')
     parser.add_argument('--include_baseline', action='store_true')
     parser.add_argument('--export_legend', action='store_true')
+    parser.add_argument('--show_legend', action='store_true')
     parser.add_argument('--zoom', action='store_true')
     args = parser.parse_args()
     return args
@@ -131,6 +145,10 @@ def main():
         'lpips': 2,
         'fps': 4,
     }[args.distortion]
+    size_ind = {
+        'size': -1,
+        'fps': -3,
+    }[args.size]
 
     datasets = to_list(args.datasets, sorted(os.listdir(args.output_path)))
     args.models = to_list(args.models)
@@ -163,7 +181,7 @@ def main():
 
         # plot
         for config in res.keys():
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(7, 5))
             if args.zoom:
                 axins = inset_axes(
                     # ax, width='80%', height='60%',
@@ -180,8 +198,8 @@ def main():
 
             for model, result in res[config].items():
                 distortion = result[:, distortion_ind]
-                size = result[:, -1]
-                if model in ['multilevel', 'non_hierarchical']:
+                size = result[:, size_ind]
+                if args.size == 'size' and model in ['multilevel', 'non_hierarchical']:
                     size += 0.031561851501464844  # checkpoints size
 
                 extra_args = {}
@@ -189,8 +207,7 @@ def main():
                     extra_args.update(METHODS_ARGS[model])
                 if result.shape[0] == 1:
                     extra_args.update(linestyle='none')
-                ax.plot(size, distortion,
-                        label=METHODS_NAMES.get(model, model), **extra_args)
+                ax.plot(size, distortion, label=METHODS_NAMES.get(model, model), **extra_args)
                 if model == 'multilevel_interp':  # plot anchors (hard-coded)
                     ax.plot(size[::7], distortion[::7], color='r',
                             marker=get_anchor(), markersize=15, linestyle='none')
@@ -200,14 +217,18 @@ def main():
                     if model == 'multilevel_interp':  # plot anchors (hard-coded)
                         axins.plot(size[::7], distortion[::7], color='r',
                                    marker=get_anchor(), markersize=15, linestyle='none')
-            ax.set_xlabel('Size (MB)$\\downarrow$')
+            ax.set_xlabel({
+                              'size': 'Size [MB]$\\downarrow$',
+                              'fps': 'FPS$\\uparrow$',
+                          }[args.size])
             ax.set_ylabel({
-                              'psnr': 'PSNR$\\uparrow$',
+                              'psnr': 'PSNR [dB]$\\uparrow$',
                               'ssim': 'SSIM$\\uparrow$',
                               'lpips': 'LPIPS$\\downarrow$',
                               'fps': 'FPS$\\uparrow$',
                           }[args.distortion])
-            ax.grid(True)
+            ax.grid(True, which='both', linestyle='-', alpha=0.4)
+
             if args.zoom:
                 axins.set_xticklabels([])
                 axins.set_yticklabels([])
@@ -221,19 +242,23 @@ def main():
                 indicate_inset_zoom(ax, axins.get_xlim()[0], axins.get_ylim()[0],
                                     axins.get_xlim()[1], axins.get_ylim()[1],
                                     edgecolor=ZOOM_COLOR, linewidth=2, zorder=5)
-            # ax.legend(loc='best')
+
+            if args.show_legend:
+                ax.legend(loc='best')
             if args.export_legend:
-                leg = ax.legend(ncol=1)
+                leg = ax.legend(ncol=3)
                 while len(ax.artists):
                     ax.artists[0].remove()
                 while len(ax.lines):
                     ax.lines[0].remove()
                 export_legend(leg, os.path.join(args.output_path, 'ablation_legend.svg'))
             fig.tight_layout()
-            # fig.savefig(os.path.join(args.output_path, f'{dataset}_{args.distortion}.png'))
-            fig.savefig(os.path.join(args.output_path, f'ablation_{dataset}_{args.distortion}.svg'), transparent=True)
+            fig.savefig(os.path.join(args.output_path, f'ablation_{dataset}_{args.distortion}_{args.size}.svg'),
+                        bbox_inches='tight', transparent=True, pad_inches=0.1)
             print(f'saved figure for {dataset}')
             plt.show()
+            if args.export_legend:
+                exit()
 
 
 if __name__ == '__main__':
